@@ -1,0 +1,71 @@
+# ── Secrets ───────────────────────────────────────────────────────────────────
+.env
+
+# ── Working scratch space ─────────────────────────────────────────────────────
+# Gitignore all of working/ except the committed structural files
+working/*
+!working/README.md
+!working/ask-ai/
+working/ask-ai/*
+!working/ask-ai/README.md
+!working/ask-ai/TEMPLATE.md
+!working/ask-ai/MIGRATE-REPO.md
+!working/export/
+working/export/*
+!working/export/README.md
+!working/status/
+working/status/*
+!working/status/README.md
+!working/notes/
+working/notes/*
+!working/notes/README.md
+
+# Script-managed dev state (branch-local, never commit)
+working/dev-state/
+
+# ── Pipeline data (large intermediate files) ──────────────────────────────────
+# Raw and processed pipeline data is NOT committed (too large, regenerable)
+data/raw/
+data/processed/
+
+# data/viz/ IS committed — it's the pre-aggregated JSON served by the viz site
+# (do NOT add data/viz/ here)
+
+# Notebook cache
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# ── viz/data/ ─────────────────────────────────────────────────────────────────
+# viz/data/ is a working copy of data/viz/ for local development
+# Actual JSON is committed in data/viz/ and synced here by scripts/dev.sh
+# Ignore the working copy to avoid duplication (deploy workflow generates it)
+viz/data/*.json
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# ── Archives ──────────────────────────────────────────────────────────────────
+*.zip
+
+# ── Runtime artifacts ─────────────────────────────────────────────────────────
+logs/
+tmp/
+*.sqlite
+*.db
+
+# ── OS / editor ───────────────────────────────────────────────────────────────
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo

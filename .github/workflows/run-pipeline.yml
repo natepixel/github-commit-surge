@@ -1,0 +1,82 @@
+name: Run Data Pipeline
+
+on:
+  # Run weekly to pick up new GH Archive data
+  schedule:
+    - cron: '0 4 * * 0'  # Sundays at 4am UTC
+  workflow_dispatch:
+    inputs:
+      step:
+        description: 'Which step to run (01, 02, 03, 04, 05, or all)'
+        required: false
+        default: 'all'
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    env:
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}   # named GH_TOKEN to avoid conflict with built-in
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Write .env
+        run: |
+          cat > .env <<EOF
+          GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
+          GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
+          BQ_DATASET=github_stats_work
+          GH_API_THREADS=4
+          EOF
+
+      - name: Step 01 — Sample users (skip if parquet exists)
+        if: ${{ github.event.inputs.step == '01' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
+        run: |
+          if [ ! -f data/raw/sampled_users.parquet ]; then
+            python pipeline/01_sample_users.py
+          else
+            echo "sampled_users.parquet already exists, skipping"
+          fi
+
+      - name: Step 03 — Enrich via GitHub API
+        if: ${{ github.event.inputs.step == '03' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
+        run: python pipeline/03_enrich_github_api.py
+
+      - name: Step 02 — Fetch yearly commits from BigQuery
+        if: ${{ github.event.inputs.step == '02' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
+        run: |
+          if [ ! -f data/raw/yearly_commits.parquet ]; then
+            python pipeline/02_fetch_yearly_commits.py
+          else
+            echo "yearly_commits.parquet already exists, skipping full BQ scan"
+          fi
+
+      - name: Step 04 — Classify cohorts
+        if: ${{ github.event.inputs.step == '04' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
+        run: python pipeline/04_classify_cohorts.py
+
+      - name: Step 05 — Export viz data
+        if: ${{ github.event.inputs.step == '05' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
+        run: python pipeline/05_export_viz_data.py
+
+      - name: Commit updated viz data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/viz/
+          git diff --staged --quiet || git commit -m "chore: refresh viz data [skip ci]"
+          git push

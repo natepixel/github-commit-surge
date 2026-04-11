@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Commit Surge — Dormant Developers &amp; the AI Era</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>GitHub Commit Surge</h1>
+    <p class="subtitle">Tracking dormant developers reactivated by AI coding tools, 2011–2025</p>
+    <div id="summary-stats" class="stat-row">
+      <div class="stat"><span id="stat-total">—</span><label>accounts analyzed</label></div>
+      <div class="stat"><span id="stat-dormant-pct">—</span><label>dormant → reactivated</label></div>
+      <div class="stat"><span id="stat-surge-ratio">—</span><label>median surge ratio (dormant cohort)</label></div>
+      <div class="stat"><span id="stat-peak-year">—</span><label>peak inflection year</label></div>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="section-curves">
+      <h2>Commit Velocity by Cohort</h2>
+      <p class="chart-desc">
+        Median annual commits per user, shaded band = interquartile range.
+        Vertical lines mark key AI tool milestones.
+      </p>
+      <div id="legend-curves" class="legend"></div>
+      <div id="chart-curves"></div>
+    </section>
+
+    <section id="section-timeline">
+      <h2>Aggregate Activity Over Time</h2>
+      <p class="chart-desc">
+        Total commits across all analyzed users, broken down by cohort.
+        Toggle between absolute counts and percentage share.
+      </p>
+      <div class="chart-controls">
+        <label><input type="radio" name="timeline-mode" value="absolute" checked /> Absolute</label>
+        <label><input type="radio" name="timeline-mode" value="percent" /> % of total</label>
+      </div>
+      <div id="chart-timeline"></div>
+    </section>
+
+    <section id="section-scatter">
+      <h2>Account Age vs. Surge Magnitude</h2>
+      <p class="chart-desc">
+        Each dot is one GitHub user (sparse cohort excluded).
+        X = years the account existed before 2022 &nbsp;·&nbsp;
+        Y = post-2022 peak minus pre-2019 peak (commits/year).
+        Dot size ∝ lifetime commits.
+      </p>
+      <div id="chart-scatter"></div>
+      <div id="scatter-table-container" hidden>
+        <h3>Selected users</h3>
+        <table id="scatter-table">
+          <thead><tr>
+            <th>Login</th><th>Account year</th><th>Cohort</th>
+            <th>Surge ratio</th><th>Inflection year</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="section-inflection">
+      <h2>When Did the Surge Happen?</h2>
+      <p class="chart-desc">
+        Distribution of "inflection years" — the year each surging user hit
+        their largest year-over-year commit increase.
+      </p>
+      <div id="chart-inflection"></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      Data: <a href="https://gharchive.org">GH Archive</a> via BigQuery ·
+      GitHub REST &amp; GraphQL API ·
+      Analysis code on GitHub
+    </p>
+    <p class="note">
+      Only public GitHub activity is counted. "Commits" = PushEvent payloads
+      from GH Archive (capped at 20 commits/push for bulk pushes).
+      Account age is used as a proxy for developer tenure — not actual age.
+    </p>
+  </footer>
+
+  <!-- Observable Plot from CDN -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>
