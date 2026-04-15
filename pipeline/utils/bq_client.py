@@ -1,6 +1,7 @@
 """Thin wrapper around google-cloud-bigquery with dry-run support."""
 from __future__ import annotations
 
+import os
 import sys
 from typing import Optional
 
@@ -31,10 +32,24 @@ def run_query(sql: str, dry_run: bool = False) -> Optional[bigquery.table.RowIte
         print("[BQ] Dry run — not executing.", file=sys.stderr)
         return None
 
-    if gb_est > 200:
-        confirm = input(f"[BQ] This query will scan {gb_est:.1f} GB. Continue? [y/N] ")
-        if confirm.strip().lower() != "y":
-            print("[BQ] Aborted.", file=sys.stderr)
+    allow_large_query = os.getenv("BQ_ALLOW_LARGE_QUERY", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "y",
+    }
+    if gb_est > 200 and not allow_large_query:
+        if sys.stdin.isatty():
+            confirm = input(f"[BQ] This query will scan {gb_est:.1f} GB. Continue? [y/N] ")
+            if confirm.strip().lower() != "y":
+                print("[BQ] Aborted.", file=sys.stderr)
+                sys.exit(1)
+        else:
+            print(
+                "[BQ] Query exceeds 200 GB in non-interactive mode. "
+                "Set BQ_ALLOW_LARGE_QUERY=1 to continue.",
+                file=sys.stderr,
+            )
             sys.exit(1)
 
     client = get_client()
