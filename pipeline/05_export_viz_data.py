@@ -36,6 +36,24 @@ COHORT_COLORS = {
 }
 
 
+def normalize_year_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize year columns to integer names and integer values."""
+    rename_map = {}
+    for col in df.columns:
+        if isinstance(col, str) and col.isdigit():
+            year = int(col)
+            if year in YEARS:
+                rename_map[col] = year
+    if rename_map:
+        df = df.rename(columns=rename_map)
+
+    for year in YEARS:
+        if year in df.columns:
+            df[year] = df[year].fillna(0).astype(int)
+
+    return df
+
+
 def export_cohort_curves(df: pd.DataFrame):
     """Per-cohort yearly p25/p50/p75/mean commit counts."""
     out = {"cohorts": {}}
@@ -154,10 +172,7 @@ def main():
     df = pd.read_parquet(IN)
     print(f"Loaded {len(df):,} classified users")
 
-    # Coerce year columns to int
-    for y in YEARS:
-        if y in df.columns:
-            df[y] = df[y].fillna(0).astype(int)
+    df = normalize_year_columns(df)
 
     print("Exporting visualization data …")
     export_cohort_curves(df)
