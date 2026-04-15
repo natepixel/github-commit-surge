@@ -16,9 +16,9 @@ Output:
     columns: login  (ready to upload to BigQuery as a filter table)
 
 Uses a disk cache so reruns are free.
+Supports resumable batch mode via GH_MAX_NEW_PROFILES.
 """
 import sys
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -67,17 +67,21 @@ def main():
     print(f"Cache has {len(cache):,} existing entries")
 
     uncached = [l for l in logins if l not in cache]
-    print(f"Fetching {len(uncached):,} new profiles …")
+    max_new = max(0, cfg.GH_MAX_NEW_PROFILES)
+    if max_new:
+        uncached = uncached[:max_new]
+        print(
+            f"Batch mode enabled (GH_MAX_NEW_PROFILES={max_new:,}) — "
+            f"processing {len(uncached):,} new profiles this run"
+        )
+    else:
+        print(f"Fetching {len(uncached):,} new profiles …")
 
     flush_every = 500
-    results_raw = []
-
     with ThreadPoolExecutor(max_workers=cfg.GH_API_THREADS) as pool:
         futures = {pool.submit(fetch_and_cache, login, cache): login for login in uncached}
         for i, future in enumerate(tqdm(as_completed(futures), total=len(futures))):
-            result = future.result()
-            if result:
-                results_raw.append(result)
+            future.result()
             if (i + 1) % flush_every == 0:
                 cache.flush()
 
@@ -86,6 +90,16 @@ def main():
 
     # Pull all profiles from cache (includes previously cached entries)
     all_profiles = [cache.get(l) for l in logins if cache.get(l) is not None]
+    if not all_profiles:
+        df_empty = pd.DataFrame(
+            columns=["login", "created_at", "account_year", "followers", "public_repos", "location"]
+        )
+        df_empty.to_parquet(PROFILES_OUT, index=False)
+        pd.DataFrame(columns=["login"]).to_csv(CONFIRMED_OUT, index=False)
+        print(f"Saved 0 confirmed profiles → {PROFILES_OUT}")
+        print(f"Saved confirmed_users.csv (0 logins) → {CONFIRMED_OUT}")
+        return
+
     df = pd.DataFrame(all_profiles)
 
     # Parse and filter

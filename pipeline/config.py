@@ -23,6 +23,7 @@ BQ_YEARLY_COMMITS_TABLE = f"{GCP_PROJECT_ID}.{BQ_DATASET}.yearly_commits"
 # GitHub API
 GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 GH_API_THREADS = int(os.getenv("GH_API_THREADS", "4"))
+GH_MAX_NEW_PROFILES = int(os.getenv("GH_MAX_NEW_PROFILES", "0"))
 
 # Pipeline parameters
 SAMPLE_SIZE = int(os.getenv("SAMPLE_SIZE", "60000"))
