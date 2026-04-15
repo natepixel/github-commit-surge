@@ -88,6 +88,49 @@ jobs:
         if: ${{ github.event.inputs.step == '03' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
         run: python pipeline/03_enrich_github_api.py
 
+      - name: Step 03 progress summary
+        if: ${{ github.event.inputs.step == '03' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+
+          sampled_path = Path('data/raw/sampled_users.parquet')
+          cache_path = Path('data/raw/gh_profiles_cache.parquet')
+          confirmed_path = Path('data/raw/confirmed_users.csv')
+
+          total_sampled = 0
+          cached_entries = 0
+          confirmed_rows = 0
+
+          if sampled_path.exists():
+              total_sampled = int(pd.read_parquet(sampled_path)['login'].nunique())
+
+          if cache_path.exists():
+              cached_entries = int(pd.read_parquet(cache_path)['key'].nunique())
+
+          if confirmed_path.exists():
+              confirmed_rows = int(len(pd.read_csv(confirmed_path)))
+
+          remaining = max(total_sampled - cached_entries, 0)
+          coverage = (100.0 * cached_entries / total_sampled) if total_sampled else 0.0
+
+          print(f"Step 03 progress: cached={cached_entries:,} / sampled={total_sampled:,} ({coverage:.1f}%) | remaining={remaining:,} | confirmed={confirmed_rows:,}")
+
+          summary = [
+              '## Step 03 Progress',
+              '',
+              f'- Sampled logins: **{total_sampled:,}**',
+              f'- Cached profiles (processed): **{cached_entries:,}**',
+              f'- Remaining uncached: **{remaining:,}**',
+              f'- Cache coverage: **{coverage:.1f}%**',
+              f'- Confirmed pre-2019 users: **{confirmed_rows:,}**',
+          ]
+          summary_path = Path(__import__('os').environ['GITHUB_STEP_SUMMARY'])
+          with open(summary_path, 'a', encoding='utf-8') as f:
+              f.write('\n'.join(summary) + '\n')
+          PY
+
       - name: Step 02 — Fetch yearly commits from BigQuery
         if: ${{ github.event.inputs.step == '02' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
         run: |
