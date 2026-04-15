@@ -1,5 +1,6 @@
 # ── Secrets ───────────────────────────────────────────────────────────────────
 .env
+.envrc
 
 # ── Working scratch space ─────────────────────────────────────────────────────
 # Gitignore all of working/ except the committed structural files
