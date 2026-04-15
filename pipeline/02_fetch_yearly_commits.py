@@ -110,6 +110,10 @@ def main():
             download_to_parquet()
         return
 
+    # The query references confirmed_users in BigQuery; ensure it exists
+    # before cost estimation/dry run to avoid NotFound errors in CI.
+    upload_confirmed_users()
+
     print("Estimating BigQuery scan cost …")
     gb = dry_run_bytes(QUERY_TEMPLATE) / 1e9
     print(f"  Estimated scan: {gb:.2f} GB  (free quota: 1000 GB/month)")
@@ -134,7 +138,6 @@ def main():
             )
             sys.exit(1)
 
-    upload_confirmed_users()
     materialize_to_bq()
     download_to_parquet()
 
