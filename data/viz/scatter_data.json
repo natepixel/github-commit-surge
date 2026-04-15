@@ -2345,7 +2345,7 @@
     "account_year": 2016,
     "surge_magnitude": -817.0,
     "surge_ratio": 0.89,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 6251,
     "cohort": "consistently_active"
   },
@@ -6015,7 +6015,7 @@
     "account_year": 2010,
     "surge_magnitude": -2435.0,
     "surge_ratio": 0.46,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 13895,
     "cohort": "consistently_active"
   },
@@ -9785,7 +9785,7 @@
     "account_year": 2010,
     "surge_magnitude": -1864.0,
     "surge_ratio": 0.17,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 6466,
     "cohort": "consistently_active"
   },
@@ -11285,7 +11285,7 @@
     "account_year": 2010,
     "surge_magnitude": -6432.0,
     "surge_ratio": 0.58,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 48259,
     "cohort": "consistently_active"
   },
@@ -11475,7 +11475,7 @@
     "account_year": 2016,
     "surge_magnitude": -2254.0,
     "surge_ratio": 0.08,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 6951,
     "cohort": "consistently_active"
   },
@@ -13545,7 +13545,7 @@
     "account_year": 2014,
     "surge_magnitude": -4056.0,
     "surge_ratio": 0.1,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 15102,
     "cohort": "consistently_active"
   },
@@ -13875,7 +13875,7 @@
     "account_year": 2013,
     "surge_magnitude": -2243.0,
     "surge_ratio": 0.46,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 16585,
     "cohort": "consistently_active"
   },
@@ -16365,7 +16365,7 @@
     "account_year": 2008,
     "surge_magnitude": -5675.0,
     "surge_ratio": 0.18,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 31057,
     "cohort": "consistently_active"
   },
@@ -16605,7 +16605,7 @@
     "account_year": 2010,
     "surge_magnitude": -998.0,
     "surge_ratio": 0.19,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 3628,
     "cohort": "consistently_active"
   },
@@ -17245,7 +17245,7 @@
     "account_year": 2010,
     "surge_magnitude": -4409.0,
     "surge_ratio": 0.15,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 14163,
     "cohort": "consistently_active"
   },
@@ -18065,7 +18065,7 @@
     "account_year": 2010,
     "surge_magnitude": -5175.0,
     "surge_ratio": 0.59,
-    "inflection_year": NaN,
+    "inflection_year": null,
     "lifetime_commits": 41591,
     "cohort": "consistently_active"
   },
