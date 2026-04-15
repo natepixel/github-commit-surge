@@ -13,6 +13,14 @@ on:
         description: 'Which step to run (01, 02, 03, 04, 05, or all)'
         required: false
         default: 'all'
+      sample_size:
+        description: 'User sample size for step 01 and downstream enrichment'
+        required: false
+        default: '10000'
+      gh_api_threads:
+        description: 'Concurrent GitHub API threads for step 03'
+        required: false
+        default: '4'
 
 jobs:
   pipeline:
@@ -46,8 +54,10 @@ jobs:
           GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
           GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
           BQ_DATASET=github_stats_work
-          GH_API_THREADS=4
+          SAMPLE_SIZE=${{ github.event.inputs.sample_size || '10000' }}
+          GH_API_THREADS=${{ github.event.inputs.gh_api_threads || '4' }}
           EOF
+          echo "Configured SAMPLE_SIZE=${{ github.event.inputs.sample_size || '10000' }} GH_API_THREADS=${{ github.event.inputs.gh_api_threads || '4' }}"
 
       - name: Step 01 — Sample users (skip if parquet exists)
         if: ${{ github.event.inputs.step == '01' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
