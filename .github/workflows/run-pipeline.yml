@@ -76,7 +76,7 @@ jobs:
           echo "Configured SAMPLE_SIZE=${{ github.event.inputs.sample_size || '10000' }} GH_API_THREADS=${{ github.event.inputs.gh_api_threads || '4' }} GH_MAX_NEW_PROFILES=${{ github.event.inputs.gh_max_new_profiles || '5000' }}"
 
       - name: Step 01 — Sample users (skip if parquet exists)
-        if: ${{ github.event.inputs.step == '01' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
+        if: ${{ github.event.inputs.step == '01' || github.event.inputs.step == '03' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
         run: |
           if [ ! -f data/raw/sampled_users.parquet ]; then
             python pipeline/01_sample_users.py
