@@ -36,6 +36,23 @@ COHORT_COLORS = {
 }
 
 
+def _sanitize_for_json(value):
+    """Recursively convert NaN/inf to None for strict JSON output."""
+    if isinstance(value, dict):
+        return {k: _sanitize_for_json(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_sanitize_for_json(v) for v in value]
+    if isinstance(value, float) and (np.isnan(value) or np.isinf(value)):
+        return None
+    return value
+
+
+def write_json(path: Path, data) -> None:
+    """Write strict JSON (no NaN) for frontend compatibility."""
+    payload = _sanitize_for_json(data)
+    path.write_text(json.dumps(payload, indent=2, allow_nan=False))
+
+
 def normalize_year_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize year columns to integer names and integer values."""
     rename_map = {}
@@ -62,13 +79,21 @@ def export_cohort_curves(df: pd.DataFrame):
         records = []
         for year in YEARS:
             col = sub[year]
+            n = int(len(col))
+            if n == 0:
+                p25 = p50 = p75 = mean = 0.0
+            else:
+                p25 = float(col.quantile(0.25))
+                p50 = float(col.median())
+                p75 = float(col.quantile(0.75))
+                mean = float(col.mean())
             records.append({
                 "year": year,
-                "p25":  float(col.quantile(0.25)),
-                "p50":  float(col.median()),
-                "p75":  float(col.quantile(0.75)),
-                "mean": float(col.mean()),
-                "n":    int(len(col)),
+                "p25": p25,
+                "p50": p50,
+                "p75": p75,
+                "mean": mean,
+                "n": n,
             })
         out["cohorts"][cohort] = records
 
@@ -84,7 +109,7 @@ def export_cohort_curves(df: pd.DataFrame):
     }
 
     path = OUT_DIR / "cohort_curves.json"
-    path.write_text(json.dumps(out, indent=2))
+    write_json(path, out)
     print(f"  → {path}")
 
 
@@ -106,7 +131,7 @@ def export_scatter(df: pd.DataFrame):
 
     out = records.to_dict(orient="records")
     path = OUT_DIR / "scatter_data.json"
-    path.write_text(json.dumps(out, indent=2))
+    write_json(path, out)
     print(f"  → {path}  ({len(out):,} points)")
 
 
@@ -122,7 +147,7 @@ def export_timeline(df: pd.DataFrame):
         records.append(row)
 
     path = OUT_DIR / "timeline.json"
-    path.write_text(json.dumps(records, indent=2))
+    write_json(path, records)
     print(f"  → {path}")
 
 
@@ -134,7 +159,7 @@ def export_inflection_histogram(df: pd.DataFrame):
     records = [{"year": int(y), "count": int(n)} for y, n in counts.items() if y >= 2019]
 
     path = OUT_DIR / "inflection_histogram.json"
-    path.write_text(json.dumps(records, indent=2))
+    write_json(path, records)
     print(f"  → {path}")
 
 
@@ -160,7 +185,7 @@ def export_summary(df: pd.DataFrame):
     }
 
     path = OUT_DIR / "summary.json"
-    path.write_text(json.dumps(out, indent=2))
+    write_json(path, out)
     print(f"  → {path}")
 
 
