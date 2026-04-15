@@ -10,6 +10,7 @@ as a broadcast JOIN filter — BQ will prune rows for actors not in our list.
 Output: data/raw/yearly_commits.parquet
   columns: login, year, push_events, commit_count
 """
+import os
 import sys
 from pathlib import Path
 
@@ -22,6 +23,7 @@ from pipeline.utils.bq_client import (
     dry_run_bytes,
     ensure_dataset_exists,
     run_query,
+    table_exists,
     upload_csv_as_table,
     get_client,
 )
@@ -90,6 +92,7 @@ def download_to_parquet():
 
 def main():
     dry_run = "--dry-run" in sys.argv
+    force_rescan = "--force-rescan" in sys.argv
 
     if not CONFIRMED_CSV.exists():
         print(f"ERROR: {CONFIRMED_CSV} not found. Run 03_enrich_github_api.py first.")
@@ -98,6 +101,15 @@ def main():
     n_users = sum(1 for _ in open(CONFIRMED_CSV)) - 1  # subtract header
     print(f"Confirmed users: {n_users:,}")
 
+    # Skip the expensive BQ scan if the materialized table already exists.
+    # Re-run with --force-rescan to overwrite.
+    if not force_rescan and table_exists(MATERIALIZED_TABLE):
+        print(f"[BQ] Materialized table {MATERIALIZED_TABLE} already exists — skipping scan.")
+        print("[BQ] Pass --force-rescan to overwrite. Downloading existing table …")
+        if not dry_run:
+            download_to_parquet()
+        return
+
     print("Estimating BigQuery scan cost …")
     gb = dry_run_bytes(QUERY_TEMPLATE) / 1e9
     print(f"  Estimated scan: {gb:.2f} GB  (free quota: 1000 GB/month)")
@@ -105,6 +117,22 @@ def main():
     if dry_run:
         print("Dry run complete. Pass no flags to execute.")
         return
+
+    # Cost guard: require explicit opt-in for large scans in non-interactive mode.
+    allow_large = os.getenv("BQ_ALLOW_LARGE_QUERY", "").strip().lower() in {"1", "true", "yes", "y"}
+    if gb > 200 and not allow_large:
+        if sys.stdin.isatty():
+            confirm = input(f"[BQ] This query will scan {gb:.1f} GB. Continue? [y/N] ")
+            if confirm.strip().lower() != "y":
+                print("[BQ] Aborted.", file=sys.stderr)
+                sys.exit(1)
+        else:
+            print(
+                f"[BQ] Query exceeds 200 GB ({gb:.1f} GB) in non-interactive mode. "
+                "Set BQ_ALLOW_LARGE_QUERY=1 to proceed.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
     upload_confirmed_users()
     materialize_to_bq()

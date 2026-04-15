@@ -57,6 +57,16 @@ def run_query(sql: str, dry_run: bool = False) -> Optional[bigquery.table.RowIte
     return job.result()
 
 
+def table_exists(table_id: str) -> bool:
+    """Return True if a BigQuery table exists."""
+    client = get_client()
+    try:
+        client.get_table(table_id)
+        return True
+    except Exception:
+        return False
+
+
 def ensure_dataset_exists() -> None:
     client = get_client()
     dataset_ref = bigquery.DatasetReference(cfg.GCP_PROJECT_ID, cfg.BQ_DATASET)
