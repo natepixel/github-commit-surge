@@ -16,7 +16,7 @@ for d in (DATA_RAW, DATA_PROCESSED, DATA_VIZ):
 # BigQuery
 GCP_PROJECT_ID = os.environ["GCP_PROJECT_ID"]
 BQ_DATASET = os.getenv("BQ_DATASET", "github_stats_work")
-BQ_SOURCE_TABLE = "bigquery-public-data.github_events"
+BQ_SOURCE_TABLE = "githubarchive.year.*"
 BQ_CONFIRMED_USERS_TABLE = f"{GCP_PROJECT_ID}.{BQ_DATASET}.confirmed_users"
 BQ_YEARLY_COMMITS_TABLE = f"{GCP_PROJECT_ID}.{BQ_DATASET}.yearly_commits"
 
