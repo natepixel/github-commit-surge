@@ -13,6 +13,10 @@ on:
         description: 'Which step to run (01, 02, 03, 04, 05, or all)'
         required: false
         default: 'all'
+      force_rescan:
+        description: 'Force step 02 to rebuild yearly_commits table (true/false)'
+        required: false
+        default: 'false'
       sample_size:
         description: 'User sample size for step 01 and downstream enrichment'
         required: false
@@ -61,10 +65,10 @@ jobs:
           path: |
             data/raw/sampled_users.parquet
             data/raw/gh_profiles_cache.parquet
-          key: pipeline-raw-v1-${{ runner.os }}-sample-${{ github.event.inputs.sample_size || '10000' }}-${{ github.run_id }}
+          key: pipeline-raw-v2-${{ runner.os }}-sample-${{ github.event.inputs.sample_size || '10000' }}-${{ github.run_id }}
           restore-keys: |
-            pipeline-raw-v1-${{ runner.os }}-sample-${{ github.event.inputs.sample_size || '10000' }}-
-            pipeline-raw-v1-${{ runner.os }}-
+            pipeline-raw-v2-${{ runner.os }}-sample-${{ github.event.inputs.sample_size || '10000' }}-
+            pipeline-raw-v2-${{ runner.os }}-
 
       - name: Write .env
         run: |
@@ -137,7 +141,11 @@ jobs:
       - name: Step 02 — Fetch yearly commits from BigQuery
         if: ${{ github.event.inputs.step == '02' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}
         run: |
-          if [ ! -f data/raw/yearly_commits.parquet ]; then
+          FORCE_RESCAN="${{ github.event.inputs.force_rescan || 'false' }}"
+          if [ "$FORCE_RESCAN" = "true" ]; then
+            echo "force_rescan=true: rebuilding yearly commits table"
+            python pipeline/02_fetch_yearly_commits.py --force-rescan
+          elif [ ! -f data/raw/yearly_commits.parquet ]; then
             python pipeline/02_fetch_yearly_commits.py
           else
             echo "yearly_commits.parquet already exists, skipping full BQ scan"
@@ -159,7 +167,7 @@ jobs:
           path: |
             data/raw/sampled_users.parquet
             data/raw/gh_profiles_cache.parquet
-          key: pipeline-raw-v1-${{ runner.os }}-sample-${{ github.event.inputs.sample_size || '10000' }}-${{ github.run_id }}
+          key: pipeline-raw-v2-${{ runner.os }}-sample-${{ github.event.inputs.sample_size || '10000' }}-${{ github.run_id }}
 
       - name: Commit updated viz data
         if: ${{ github.event.inputs.step == '05' || github.event.inputs.step == 'all' || github.event_name == 'schedule' }}

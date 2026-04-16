@@ -27,7 +27,8 @@ GH_MAX_NEW_PROFILES = int(os.getenv("GH_MAX_NEW_PROFILES", "0"))
 
 # Pipeline parameters
 SAMPLE_SIZE = int(os.getenv("SAMPLE_SIZE", "60000"))
-ACCOUNT_CUTOFF_YEAR = 2019       # Only users who joined before this year
+OLD_ACCOUNT_CUTOFF_YEAR = int(os.getenv("OLD_ACCOUNT_CUTOFF_YEAR", "2019"))  # Older-account boundary
+ACCOUNT_CUTOFF_YEAR = OLD_ACCOUNT_CUTOFF_YEAR  # Backward-compatible alias
 MIN_PRE_AI_YEARS = 2             # Must have had account for at least N years before 2022
 ANALYSIS_START_YEAR = 2011
 ANALYSIS_END_YEAR = 2025
@@ -37,3 +38,4 @@ DORMANT_MAX_PRE_MEAN = 10        # ≤ N commits/year average pre-2019 = "dorman
 ACTIVE_MIN_POST_MEAN = 30        # ≥ N commits/year average post-2022 = "active"
 SURGE_MIN_RATIO = 5.0            # post_mean / pre_mean must be ≥ this for "reactivated"
 CONSISTENT_MIN_MEAN = 50         # Both pre and post means ≥ this = "consistently active"
+NEW_SURGER_MAX_PRE_MEAN = float(os.getenv("NEW_SURGER_MAX_PRE_MEAN", "5"))

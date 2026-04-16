@@ -8,9 +8,9 @@ Cursor) became mainstream.
 
 ## Hypothesis
 
-A cohort of experienced developers (accounts pre-2019) with low activity went largely
-quiet for years, then surged dramatically post-2022. This surge is distinct from simply
-"more new developers joining." We want to map, visualize, and understand it.
+A cohort of experienced developers (older accounts) may have gone relatively quiet,
+then surged post-2022. We compare that surge signal against newer-account cohorts to
+separate behavior change from pure account-growth effects.
 
 ## How it works
 
@@ -20,7 +20,7 @@ GH Archive (BigQuery)  ──┐
 GitHub REST/GraphQL API ──┘
 ```
 
-1. **Sample** ~60k pre-2019 GitHub users from GH Archive via BigQuery (1% TABLESAMPLE)
+1. **Sample** ~60k GitHub users from balanced older/newer activity windows via BigQuery
 2. **Enrich** with GitHub API to confirm account age and filter bots
 3. **Fetch** per-user annual commit counts 2011–2025 from BigQuery (targeted JOIN)
 4. **Classify** users into cohorts: dormant-reactivated, consistently-active, new-surger, always-sparse
@@ -35,6 +35,7 @@ GitHub REST/GraphQL API ──┘
 - `pipeline/` — Python data pipeline (5 sequential steps)
 - `viz/` — static HTML/JS visualization (Observable Plot)
 - `data/viz/` — pre-computed JSON output (committed, served by viz/)
+  - includes `age_surge_comparison.json` for older-vs-newer surge analysis
 - `notebooks/` — exploration and threshold-tuning notebooks
 - `skills/` — operational runbooks
 

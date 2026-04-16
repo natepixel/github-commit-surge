@@ -6,7 +6,6 @@ endpoint to get account creation date and verify it's a real human account.
 
 Filters applied:
   - type == 'User' (not Organization or Bot)
-  - created_at < ACCOUNT_CUTOFF_YEAR (joined before the AI era)
   - public_repos > 0
 
 Output:
@@ -106,7 +105,6 @@ def main():
     df["created_at"] = pd.to_datetime(df["created_at"], utc=True, errors="coerce")
     df["account_year"] = df["created_at"].dt.year
     df = df.dropna(subset=["created_at"])
-    df = df[df["account_year"] < cfg.ACCOUNT_CUTOFF_YEAR]
     df = df[df["public_repos"] > 0]
     df = df.sort_values("login")
 
