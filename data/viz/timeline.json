@@ -1,19 +1,19 @@
 [
   {
     "year": 2011,
-    "dormant_reactivated": 5,
-    "consistently_active": 33117,
+    "dormant_reactivated": 45,
+    "consistently_active": 30348,
     "new_surger": 0,
-    "always_sparse": 13404,
-    "total": 46526
+    "always_sparse": 8485,
+    "total": 38878
   },
   {
     "year": 2012,
-    "dormant_reactivated": 0,
-    "consistently_active": 34046,
+    "dormant_reactivated": 28,
+    "consistently_active": 30470,
     "new_surger": 0,
-    "always_sparse": 13803,
-    "total": 47849
+    "always_sparse": 10634,
+    "total": 41132
   },
   {
     "year": 2013,
@@ -33,90 +33,90 @@
   },
   {
     "year": 2015,
-    "dormant_reactivated": 456,
-    "consistently_active": 1431850,
+    "dormant_reactivated": 979,
+    "consistently_active": 1385229,
     "new_surger": 0,
-    "always_sparse": 907998,
-    "total": 2340304
+    "always_sparse": 924018,
+    "total": 2310226
   },
   {
     "year": 2016,
-    "dormant_reactivated": 961,
-    "consistently_active": 2040884,
-    "new_surger": 0,
-    "always_sparse": 1703506,
-    "total": 3745351
+    "dormant_reactivated": 1602,
+    "consistently_active": 1938096,
+    "new_surger": 23,
+    "always_sparse": 1447595,
+    "total": 3387316
   },
   {
     "year": 2017,
-    "dormant_reactivated": 705,
-    "consistently_active": 2182458,
-    "new_surger": 0,
-    "always_sparse": 1142943,
-    "total": 3326106
+    "dormant_reactivated": 2096,
+    "consistently_active": 2065716,
+    "new_surger": 1,
+    "always_sparse": 1059803,
+    "total": 3127616
   },
   {
     "year": 2018,
-    "dormant_reactivated": 2358,
-    "consistently_active": 2533996,
-    "new_surger": 0,
-    "always_sparse": 1623347,
-    "total": 4159701
+    "dormant_reactivated": 4481,
+    "consistently_active": 1624426,
+    "new_surger": 32,
+    "always_sparse": 488661,
+    "total": 2117600
   },
   {
     "year": 2019,
-    "dormant_reactivated": 5739,
-    "consistently_active": 2634454,
-    "new_surger": 0,
-    "always_sparse": 933723,
-    "total": 3573916
+    "dormant_reactivated": 37529,
+    "consistently_active": 1751127,
+    "new_surger": 10872,
+    "always_sparse": 441557,
+    "total": 2241085
   },
   {
     "year": 2020,
-    "dormant_reactivated": 18385,
-    "consistently_active": 2929883,
-    "new_surger": 0,
-    "always_sparse": 537254,
-    "total": 3485522
+    "dormant_reactivated": 130814,
+    "consistently_active": 1596767,
+    "new_surger": 53004,
+    "always_sparse": 316315,
+    "total": 2096900
   },
   {
     "year": 2021,
-    "dormant_reactivated": 23042,
-    "consistently_active": 2793476,
-    "new_surger": 0,
-    "always_sparse": 294570,
-    "total": 3111088
+    "dormant_reactivated": 202709,
+    "consistently_active": 1433437,
+    "new_surger": 139889,
+    "always_sparse": 268986,
+    "total": 2045021
   },
   {
     "year": 2022,
-    "dormant_reactivated": 16186,
-    "consistently_active": 3173348,
-    "new_surger": 0,
-    "always_sparse": 167626,
-    "total": 3357160
+    "dormant_reactivated": 441320,
+    "consistently_active": 1830216,
+    "new_surger": 504612,
+    "always_sparse": 216204,
+    "total": 2992352
   },
   {
     "year": 2023,
-    "dormant_reactivated": 15765,
-    "consistently_active": 2114913,
-    "new_surger": 0,
-    "always_sparse": 152254,
-    "total": 2282932
+    "dormant_reactivated": 349889,
+    "consistently_active": 1924598,
+    "new_surger": 535550,
+    "always_sparse": 188768,
+    "total": 2998805
   },
   {
     "year": 2024,
-    "dormant_reactivated": 23418,
-    "consistently_active": 2226864,
-    "new_surger": 0,
-    "always_sparse": 146819,
-    "total": 2397101
+    "dormant_reactivated": 385117,
+    "consistently_active": 1473158,
+    "new_surger": 843195,
+    "always_sparse": 216235,
+    "total": 2917705
   },
   {
     "year": 2025,
-    "dormant_reactivated": 14534,
-    "consistently_active": 1400587,
-    "new_surger": 0,
-    "always_sparse": 89150,
-    "total": 1504271
+    "dormant_reactivated": 153711,
+    "consistently_active": 747613,
+    "new_surger": 321433,
+    "always_sparse": 108056,
+    "total": 1330813
   }
 ]

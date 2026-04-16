@@ -1,0 +1,54 @@
+{
+  "old_account_cutoff_year": 2019,
+  "overall": {
+    "n_users": 8755,
+    "ai_surge_rate_pct": 35.4,
+    "dormant_ai_surge_rate_pct": 31.07
+  },
+  "older_vs_newer": [
+    {
+      "segment": "older_accounts",
+      "n_users": 5575,
+      "ai_surge_rate_pct": 18.8,
+      "dormant_ai_surge_rate_pct": 12.04,
+      "median_post_mean": 18.25
+    },
+    {
+      "segment": "newer_accounts",
+      "n_users": 3180,
+      "ai_surge_rate_pct": 64.5,
+      "dormant_ai_surge_rate_pct": 64.43,
+      "median_post_mean": 56.5
+    }
+  ],
+  "age_bins": [
+    {
+      "age_group": "0-2y",
+      "n_users": 2840,
+      "ai_surge_rate_pct": 63.91,
+      "dormant_ai_surge_rate_pct": 63.84,
+      "median_post_mean": 54.88
+    },
+    {
+      "age_group": "3-5y",
+      "n_users": 842,
+      "ai_surge_rate_pct": 68.53,
+      "dormant_ai_surge_rate_pct": 65.08,
+      "median_post_mean": 84.0
+    },
+    {
+      "age_group": "6-10y",
+      "n_users": 4024,
+      "ai_surge_rate_pct": 14.19,
+      "dormant_ai_surge_rate_pct": 7.95,
+      "median_post_mean": 7.0
+    },
+    {
+      "age_group": "11-15y",
+      "n_users": 1049,
+      "ai_surge_rate_pct": 12.96,
+      "dormant_ai_surge_rate_pct": 3.72,
+      "median_post_mean": 70.0
+    }
+  ]
+}

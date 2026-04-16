@@ -1,15 +1,21 @@
 {
-  "total_users_analyzed": 8427,
+  "total_users_analyzed": 8755,
   "cohort_counts": {
-    "always_sparse": 6551,
-    "consistently_active": 1772,
-    "dormant_reactivated": 104
+    "always_sparse": 4806,
+    "new_surger": 2048,
+    "consistently_active": 1230,
+    "dormant_reactivated": 671
   },
-  "dormant_reactivated_pct": 1.2,
-  "median_surge_ratio_dormant": 12.0,
-  "peak_inflection_year": 2020,
+  "dormant_reactivated_pct": 7.7,
+  "median_surge_ratio_dormant": 96.2,
+  "peak_inflection_year": 2024,
   "account_year_range": [
     2008,
-    2018
-  ]
+    2026
+  ],
+  "old_account_cutoff_year": 2019,
+  "ai_surge_rate_older_accounts_pct": 18.8,
+  "ai_surge_rate_newer_accounts_pct": 64.5,
+  "dormant_ai_surge_rate_older_accounts_pct": 12.04,
+  "dormant_ai_surge_rate_newer_accounts_pct": 64.43
 }
