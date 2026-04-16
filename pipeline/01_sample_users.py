@@ -23,43 +23,40 @@ from pipeline.utils.bq_client import dry_run_bytes, run_query
 OLDER_LIMIT = max(1, cfg.SAMPLE_SIZE // 2)
 NEWER_LIMIT = max(1, cfg.SAMPLE_SIZE - OLDER_LIMIT)
 
-QUERY = f"""
-WITH older_candidates AS (
-  SELECT DISTINCT actor.login AS login
-  FROM `{cfg.BQ_SOURCE_TABLE}`
-  TABLESAMPLE SYSTEM (1 PERCENT)
-  WHERE type = 'PushEvent'
-    AND _TABLE_SUFFIX BETWEEN '2015' AND '2018'
-    AND actor.login IS NOT NULL
-    AND actor.login NOT LIKE '%[bot]%'
-    AND actor.login NOT LIKE '%bot%'
-    AND actor.login NOT LIKE '%-bot'
-    AND actor.login NOT LIKE '%Bot%'
-  LIMIT {OLDER_LIMIT}
-),
-newer_candidates AS (
-  SELECT DISTINCT actor.login AS login
-  FROM `{cfg.BQ_SOURCE_TABLE}`
-  TABLESAMPLE SYSTEM (1 PERCENT)
-  WHERE type = 'PushEvent'
-    AND _TABLE_SUFFIX BETWEEN '2022' AND '2025'
-    AND actor.login IS NOT NULL
-    AND actor.login NOT LIKE '%[bot]%'
-    AND actor.login NOT LIKE '%bot%'
-    AND actor.login NOT LIKE '%-bot'
-    AND actor.login NOT LIKE '%Bot%'
-  LIMIT {NEWER_LIMIT}
-)
-SELECT DISTINCT login
-FROM (
-  SELECT login FROM older_candidates
-  UNION ALL
-  SELECT login FROM newer_candidates
-)
-LIMIT {cfg.SAMPLE_SIZE}
+OLDER_QUERY = f"""
+SELECT DISTINCT actor.login AS login
+FROM `{cfg.BQ_SOURCE_TABLE}`
+TABLESAMPLE SYSTEM (1 PERCENT)
+WHERE type = 'PushEvent'
+  AND _TABLE_SUFFIX BETWEEN '2015' AND '2018'
+  AND actor.login IS NOT NULL
+  AND actor.login NOT LIKE '%[bot]%'
+  AND actor.login NOT LIKE '%bot%'
+  AND actor.login NOT LIKE '%-bot'
+  AND actor.login NOT LIKE '%Bot%'
+LIMIT {OLDER_LIMIT}
+"""
+
+NEWER_QUERY = f"""
+SELECT DISTINCT actor.login AS login
+FROM `{cfg.BQ_SOURCE_TABLE}`
+TABLESAMPLE SYSTEM (1 PERCENT)
+WHERE type = 'PushEvent'
+  AND _TABLE_SUFFIX BETWEEN '2022' AND '2025'
+  AND actor.login IS NOT NULL
+  AND actor.login NOT LIKE '%[bot]%'
+  AND actor.login NOT LIKE '%bot%'
+  AND actor.login NOT LIKE '%-bot'
+  AND actor.login NOT LIKE '%Bot%'
+LIMIT {NEWER_LIMIT}
 """
 
 OUTPUT = cfg.DATA_RAW / "sampled_users.parquet"
+
+
+def collect_logins(sql: str, label: str) -> list[str]:
+    rows = run_query(sql)
+    return [row.login for row in tqdm(rows, desc=f"Collecting {label} logins")]
 
 
 def main():
@@ -72,18 +69,26 @@ def main():
     )
 
     print("Estimating BigQuery scan cost …")
-    gb = dry_run_bytes(QUERY) / 1e9
-    print(f"  Estimated scan: {gb:.2f} GB")
+    older_gb = dry_run_bytes(OLDER_QUERY) / 1e9
+    newer_gb = dry_run_bytes(NEWER_QUERY) / 1e9
+    print(f"  older-window estimate: {older_gb:.2f} GB")
+    print(f"  newer-window estimate: {newer_gb:.2f} GB")
+    print(f"  total estimate: {(older_gb + newer_gb):.2f} GB")
 
     if dry_run:
         print("Dry run complete. Pass no flags to execute.")
         return
 
-    print("Running query …")
-    rows = run_query(QUERY)
-    logins = [row.login for row in tqdm(rows, desc="Collecting logins")]
+    print("Running older-window query …")
+    older_logins = collect_logins(OLDER_QUERY, "older-window")
 
-    df = pd.DataFrame({"login": logins}).drop_duplicates()
+    print("Running newer-window query …")
+    newer_logins = collect_logins(NEWER_QUERY, "newer-window")
+
+    df = pd.DataFrame({"login": older_logins + newer_logins}).drop_duplicates()
+    if len(df) > cfg.SAMPLE_SIZE:
+        df = df.head(cfg.SAMPLE_SIZE)
+
     df.to_parquet(OUTPUT, index=False)
     print(f"Saved {len(df):,} candidate logins → {OUTPUT}")
 
